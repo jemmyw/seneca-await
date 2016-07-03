@@ -1,6 +1,6 @@
 {
   "name": "seneca-await",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Use await with Seneca",
   "main": "dist/index.js",
   "scripts": {
