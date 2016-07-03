@@ -8,6 +8,12 @@ Use async / await methods with seneca.
 npm install seneca-async
 ```
 
+## Setup
+
+You need to have babel to use await functions.
+
+http://babeljs.io/docs/plugins/transform-async-to-module-method/
+
 ## Usage
 
 ```
@@ -19,15 +25,15 @@ async function addHello(msg) {
   return `Hello ${msg}`
 }
 
-seneca.add('role:test,cmd:echo', async function(msg) {
-  const outputMsg = await addHello(msg.text)
-  return {text: outputMsg}
+seneca.add('role:test,cmd:sayhello', async function(msg) {
+  const text = await addHello(msg.name)
+  return {text: text}
 })
 
 async function start() {
   await seneca.ready()
 
-  const response = await seneca.act('role:test,cmd:echo,text:Person')
+  const response = await seneca.act('role:test,cmd:sayhello,name:Person')
   console.log(response.text) // => Hello Person
 }
 
