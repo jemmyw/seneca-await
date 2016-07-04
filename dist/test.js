@@ -2,8 +2,10 @@
 
 var _bluebird = require('bluebird');
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 let start = (() => {
-  var _ref2 = (0, _bluebird.coroutine)(function* () {
+  var _ref3 = (0, _bluebird.coroutine)(function* () {
     yield seneca.ready();
     const msg = yield seneca.act('role:test,cmd:hello,name:jeremy');
     console.log(msg);
@@ -32,10 +34,13 @@ let start = (() => {
     seneca.act('role:test,cmd:bye,name:moss', function (err, response) {
       console.log(err, response);
     });
+
+    const msg5 = yield seneca.act('role:test,cmd:hellobye,name:jeremy');
+    console.log(msg5);
   });
 
   return function start() {
-    return _ref2.apply(this, arguments);
+    return _ref3.apply(this, arguments);
   };
 })();
 
@@ -60,5 +65,17 @@ seneca.add({ role: 'test', cmd: 'hello' }, (() => {
 seneca.add({ role: 'test', cmd: 'bye' }, function (msg, respond) {
   return { msg: `bye ${ msg.name }` };
 });
+
+seneca.add({ role: 'test', cmd: 'hellobye' }, (() => {
+  var _ref2 = (0, _bluebird.coroutine)(function* (msg) {
+    const hello = yield this.act(_extends({}, msg, { cmd: 'hello' }));
+    const bye = yield this.act(_extends({}, msg, { cmd: 'bye' }));
+    return { hello, bye };
+  });
+
+  return function (_x2) {
+    return _ref2.apply(this, arguments);
+  };
+})());
 
 start();

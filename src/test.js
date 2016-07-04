@@ -10,6 +10,12 @@ seneca.add({role:'test',cmd:'bye'}, function(msg, respond) {
   return {msg: `bye ${msg.name}`}
 })
 
+seneca.add({role:'test',cmd:'hellobye'}, async function(msg) {
+  const hello = await this.act({...msg,cmd:'hello'})
+  const bye = await this.act({...msg,cmd:'bye'})
+  return {hello, bye}
+})
+
 async function start() {
   await seneca.ready()
   const msg = await seneca.act('role:test,cmd:hello,name:jeremy')
@@ -37,6 +43,9 @@ async function start() {
   seneca.act('role:test,cmd:bye,name:moss', function(err, response) {
     console.log(err, response)
   })
+
+  const msg5 = await seneca.act('role:test,cmd:hellobye,name:jeremy')
+  console.log(msg5)
 }
 
 start()
