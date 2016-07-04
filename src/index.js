@@ -30,6 +30,7 @@ function wrap(seneca) {
   wrapped.add = function(pattern, fn) {
     return seneca.add(pattern, toc(fn))
   }
+  wrapped.prior = Promise.promisify(seneca.prior, {context: seneca})
 
   return wrapped
 }
