@@ -44,11 +44,28 @@ function wrap(seneca) {
     }
   }
 
-  wrapped.act = _bluebird2.default.promisify(seneca.act, { context: seneca });
+  wrapped.act = function (msg, cb) {
+    if (typeof cb === 'function') {
+      return seneca.act(msg, cb);
+    } else {
+      return new _bluebird2.default(function (resolve, reject) {
+        seneca.act(msg, function (err, response) {
+          if (err) {
+            return reject(err);
+          }
+          resolve(response);
+        });
+      });
+    }
+  };
   wrapped.ready = _bluebird2.default.promisify(seneca.ready, { context: seneca });
   wrapped.add = function (pattern, fn) {
     return seneca.add(pattern, toc(fn));
   };
+
+  if (seneca.prior) {
+    wrapped.prior = _bluebird2.default.promisify(seneca.prior, { context: seneca });
+  }
 
   return wrapped;
 }

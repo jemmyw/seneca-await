@@ -25,12 +25,26 @@ function wrap(seneca) {
     }
   }
 
-  wrapped.act = Promise.promisify(seneca.act, {context: seneca})
+  wrapped.act = function(msg, cb) {
+    if (typeof cb === 'function') {
+      return seneca.act(msg, cb)
+    } else {
+      return new Promise(function(resolve, reject) {
+        seneca.act(msg, function(err, response) {
+          if (err) { return reject(err) }
+          resolve(response)
+        })
+      })
+    }
+  }
   wrapped.ready = Promise.promisify(seneca.ready, {context: seneca})
   wrapped.add = function(pattern, fn) {
     return seneca.add(pattern, toc(fn))
   }
-  wrapped.prior = Promise.promisify(seneca.prior, {context: seneca})
+
+  if (seneca.prior) {
+    wrapped.prior = Promise.promisify(seneca.prior, {context: seneca})
+  }
 
   return wrapped
 }
