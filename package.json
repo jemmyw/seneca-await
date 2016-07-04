@@ -12,7 +12,6 @@
   "dependencies": {
     "bluebird": "^3.4.1",
     "bluebird-co": "^2.1.2",
-    "eslint": "^3.0.0",
     "seneca": "^2.1.0",
     "thunks": "^4.2.2"
   },
@@ -24,7 +23,8 @@
     "babel-plugin-transform-async-to-module-method": "^6.8.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.10.3",
     "babel-preset-es2016": "^6.11.0",
-    "babel-preset-stage-0": "^6.5.0"
+    "babel-preset-stage-0": "^6.5.0",
+    "eslint": "^3.0.0"
   },
   "keywords": [
     "seneca",
