@@ -68,14 +68,16 @@ function wrap(seneca) {
 
   wrapped.add = function (pattern, fn) {
     const cb = fn.length !== 2 ? toc(fn) : fn;
-    return seneca.add(pattern, cb);
+    seneca.add(pattern, cb);
+    return wrapped;
   };
 
   wrapped.use = function (fn, ...rest) {
-    return seneca.use(function (...args) {
+    seneca.use(function (...args) {
       const innerWrapped = wrap(this);
       return fn.apply(innerWrapped, args);
     }, ...rest);
+    return wrapped;
   };
 
   if (seneca.prior) {
