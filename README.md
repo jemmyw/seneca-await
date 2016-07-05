@@ -5,7 +5,7 @@ Use async / await methods with seneca.
 ## Install
 
 ```
-npm install seneca-async
+npm install seneca-await
 ```
 
 ## Setup
@@ -17,7 +17,7 @@ http://babeljs.io/docs/plugins/transform-async-to-module-method/
 ## Usage
 
 ```
-import Seneca from 'seneca-async'
+import Seneca from 'seneca-await'
 
 const seneca = Seneca()
 
