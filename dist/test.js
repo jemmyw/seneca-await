@@ -7,36 +7,81 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 let start = (() => {
   var _ref3 = (0, _bluebird.coroutine)(function* () {
     yield seneca.ready();
-    const msg = yield seneca.act('role:test,cmd:hello,name:jeremy');
-    console.log(msg);
 
-    const msg2 = yield seneca.act('role:test,cmd:hello,name:jo');
-    console.log(msg2);
+    (0, _tapeAsync2.default)('act await async add', (() => {
+      var _ref4 = (0, _bluebird.coroutine)(function* (t) {
+        const response = yield seneca.act('role:test,cmd:hello,name:jeremy');
+        t.equal(response.msg, 'hello jeremy');
+      });
 
-    seneca.act('role:test,cmd:hello,name:hazel').then(function (msg) {
-      return console.log(msg);
+      return function (_x3) {
+        return _ref4.apply(this, arguments);
+      };
+    })());
+
+    (0, _tapeAsync2.default)('act promise async add', function (t) {
+      seneca.act('role:test,cmd:hello,name:hazel').then(function (response) {
+        t.equal(response.msg, 'hello hazel');
+        t.end();
+      });
     });
 
-    seneca.act('role:test,cmd:hello,name:moss', function (err, response) {
-      console.log(err, response);
+    (0, _tapeAsync2.default)('act callback, async add', function (t) {
+      seneca.act('role:test,cmd:hello,name:moss', function (err, response) {
+        t.false(err);
+        t.equal(response.msg, 'hello moss');
+        t.end();
+      });
     });
 
-    const msg3 = yield seneca.act('role:test,cmd:bye,name:jeremy');
-    console.log(msg3);
+    (0, _tapeAsync2.default)('act await, callback add', (() => {
+      var _ref5 = (0, _bluebird.coroutine)(function* (t) {
+        const response = yield seneca.act('role:test,cmd:bye,name:jo');
+        t.equal(response.msg, 'bye jo');
+      });
 
-    const msg4 = yield seneca.act('role:test,cmd:bye,name:jo');
-    console.log(msg4);
+      return function (_x4) {
+        return _ref5.apply(this, arguments);
+      };
+    })());
 
-    seneca.act('role:test,cmd:bye,name:hazel').then(function (msg) {
-      return console.log(msg);
+    (0, _tapeAsync2.default)('act promise, callback add', function (t) {
+      seneca.act('role:test,cmd:bye,name:hazel').then(function (response) {
+        t.equal(response.msg, 'bye hazel');
+        t.end();
+      });
     });
 
-    seneca.act('role:test,cmd:bye,name:moss', function (err, response) {
-      console.log(err, response);
+    (0, _tapeAsync2.default)('act callback, callback add', function (t) {
+      seneca.act('role:test,cmd:bye,name:moss', function (err, response) {
+        t.false(err);
+        t.equal(response.msg, 'bye moss');
+      });
     });
 
-    const msg5 = yield seneca.act('role:test,cmd:hellobye,name:jeremy');
-    console.log(msg5);
+    (0, _tapeAsync2.default)('add calling await act internally', (() => {
+      var _ref6 = (0, _bluebird.coroutine)(function* (t) {
+        const response = yield seneca.act('role:test,cmd:hellobye,name:jeremy');
+        t.equal(response.hello.msg, 'hello jeremy');
+        t.equal(response.bye.msg, 'bye jeremy');
+      });
+
+      return function (_x5) {
+        return _ref6.apply(this, arguments);
+      };
+    })());
+
+    (0, _tapeAsync2.default)('multiple input patterns', (() => {
+      var _ref7 = (0, _bluebird.coroutine)(function* (t) {
+        const response = yield seneca.act('role:test,cmd:hellobye', { name: 'molly' });
+        t.equal(response.hello.msg, 'hello molly');
+        t.equal(response.bye.msg, 'bye molly');
+      });
+
+      return function (_x6) {
+        return _ref7.apply(this, arguments);
+      };
+    })());
   });
 
   return function start() {
@@ -47,6 +92,10 @@ let start = (() => {
 var _index = require('./index');
 
 var _index2 = _interopRequireDefault(_index);
+
+var _tapeAsync = require('tape-async');
+
+var _tapeAsync2 = _interopRequireDefault(_tapeAsync);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -63,7 +112,7 @@ seneca.add({ role: 'test', cmd: 'hello' }, (() => {
 })());
 
 seneca.add({ role: 'test', cmd: 'bye' }, function (msg, respond) {
-  return { msg: `bye ${ msg.name }` };
+  respond(null, { msg: `bye ${ msg.name }` });
 });
 
 seneca.add({ role: 'test', cmd: 'hellobye' }, (() => {

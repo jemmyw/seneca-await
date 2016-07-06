@@ -30,12 +30,24 @@ function toc(fn) {
   };
 }
 
+function isWrapped(seneca) {
+  return Boolean(seneca[awaitWrapped]);
+}
+
+function unwrap(seneca) {
+  if (isWrapped(seneca)) {
+    return seneca.seneca;
+  } else {
+    return seneca;
+  }
+}
+
 function wrap(seneca) {
   if (seneca[awaitWrapped]) {
     return seneca;
   }
 
-  const wrapped = {};
+  const wrapped = { seneca };
   wrapped[awaitWrapped] = true;
 
   for (let k in seneca) {
@@ -50,12 +62,14 @@ function wrap(seneca) {
     }
   }
 
-  wrapped.act = function (msg, cb) {
+  wrapped.act = function (...args) {
+    const cb = args.slice(-1)[0];
+
     if (typeof cb === 'function') {
-      return seneca.act(msg, cb);
+      return seneca.act(...args);
     } else {
       return new _bluebird2.default(function (resolve, reject) {
-        seneca.act(msg, function (err, response) {
+        seneca.act(...args, function (err, response) {
           if (err) {
             return reject(err);
           }

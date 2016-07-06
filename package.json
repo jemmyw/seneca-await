@@ -4,7 +4,7 @@
   "description": "Use await with Seneca",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run prepublish && node dist/test.js",
     "prepublish": "babel -d dist src"
   },
   "author": "Jeremy Wells",
@@ -24,7 +24,8 @@
     "babel-plugin-transform-es2015-modules-commonjs": "^6.10.3",
     "babel-preset-es2016": "^6.11.0",
     "babel-preset-stage-0": "^6.5.0",
-    "eslint": "^3.0.0"
+    "eslint": "^3.0.0",
+    "tape-async": "^2.1.0"
   },
   "keywords": [
     "seneca",

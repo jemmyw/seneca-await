@@ -1,4 +1,5 @@
 import Seneca from './index'
+import test from 'tape-async'
 
 const seneca = Seneca()
 
@@ -7,7 +8,7 @@ seneca.add({role:'test',cmd:'hello'}, async function(msg) {
 })
 
 seneca.add({role:'test',cmd:'bye'}, function(msg, respond) {
-  return {msg: `bye ${msg.name}`}
+  respond(null, {msg: `bye ${msg.name}`})
 })
 
 seneca.add({role:'test',cmd:'hellobye'}, async function(msg) {
@@ -18,34 +19,58 @@ seneca.add({role:'test',cmd:'hellobye'}, async function(msg) {
 
 async function start() {
   await seneca.ready()
-  const msg = await seneca.act('role:test,cmd:hello,name:jeremy')
-  console.log(msg)
 
-  const msg2 = await seneca.act('role:test,cmd:hello,name:jo')
-  console.log(msg2)
-
-  seneca.act('role:test,cmd:hello,name:hazel')
-    .then(msg => console.log(msg))
-
-  seneca.act('role:test,cmd:hello,name:moss', function(err, response) {
-    console.log(err, response)
+  test('act await async add', async function(t) {
+    const response = await seneca.act('role:test,cmd:hello,name:jeremy')
+    t.equal(response.msg, 'hello jeremy')
   })
 
-  const msg3 = await seneca.act('role:test,cmd:bye,name:jeremy')
-  console.log(msg3)
-
-  const msg4 = await seneca.act('role:test,cmd:bye,name:jo')
-  console.log(msg4)
-
-  seneca.act('role:test,cmd:bye,name:hazel')
-    .then(msg => console.log(msg))
-
-  seneca.act('role:test,cmd:bye,name:moss', function(err, response) {
-    console.log(err, response)
+  test('act promise async add', function(t) {
+    seneca.act('role:test,cmd:hello,name:hazel').then(response => {
+      t.equal(response.msg, 'hello hazel')
+      t.end()
+    })
   })
 
-  const msg5 = await seneca.act('role:test,cmd:hellobye,name:jeremy')
-  console.log(msg5)
+  test('act callback, async add', function(t) {
+    seneca.act('role:test,cmd:hello,name:moss', function(err, response) {
+      t.false(err)
+      t.equal(response.msg, 'hello moss')
+      t.end()
+    })
+  })
+
+  test('act await, callback add', async function(t) {
+    const response = await seneca.act('role:test,cmd:bye,name:jo')
+    t.equal(response.msg, 'bye jo')
+  })
+
+  test('act promise, callback add', function(t) {
+    seneca.act('role:test,cmd:bye,name:hazel')
+    .then(response => {
+      t.equal(response.msg, 'bye hazel')
+      t.end()
+    })
+  })
+
+  test('act callback, callback add', function(t) {
+    seneca.act('role:test,cmd:bye,name:moss', function(err, response) {
+      t.false(err)
+      t.equal(response.msg, 'bye moss')
+    })
+  })
+
+  test('add calling await act internally', async function(t) {
+    const response = await seneca.act('role:test,cmd:hellobye,name:jeremy')
+    t.equal(response.hello.msg, 'hello jeremy')
+    t.equal(response.bye.msg, 'bye jeremy')
+  })
+
+  test('multiple input patterns', async function(t) {
+    const response = await seneca.act('role:test,cmd:hellobye', {name: 'molly'})
+    t.equal(response.hello.msg, 'hello molly')
+    t.equal(response.bye.msg, 'bye molly')
+  })
 }
 
 start()
