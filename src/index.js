@@ -32,6 +32,7 @@ function wrap(seneca) {
 
   const wrapped = {seneca}
   wrapped[awaitWrapped] = true
+  wrapped.sa = true
 
   for(let k in seneca) {
     if (typeof seneca[k] === 'function') {
@@ -73,8 +74,15 @@ function wrap(seneca) {
     return wrapped
   }
 
+  wrapped.wrap = function(pattern, fn) {
+    const cb = fn.length !== 2 ? toc(fn) : fn
+    seneca.wrap(pattern, cb)
+    return wrapped
+  }
+
   if (seneca.prior) {
     wrapped.prior = function(msg, cb) {
+      console.log(msg, cb)
       if (typeof cb === 'function') {
         return seneca.prior(msg, cb)
       } else {

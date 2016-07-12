@@ -82,6 +82,49 @@ let start = (() => {
         return _ref7.apply(this, arguments);
       };
     })());
+
+    (0, _tapeAsync2.default)('before wrap', (() => {
+      var _ref8 = (0, _bluebird.coroutine)(function* (t) {
+        seneca.wrap('role:test,cmd:hello', (() => {
+          var _ref9 = (0, _bluebird.coroutine)(function* ({ name }) {
+            return yield this.prior({ name: name.toUpperCase() });
+          });
+
+          return function (_x8) {
+            return _ref9.apply(this, arguments);
+          };
+        })());
+
+        const response = yield seneca.act('role:test,cmd:hello,name:jeremy');
+        t.equals(response.msg, 'hello JEREMY');
+      });
+
+      return function (_x7) {
+        return _ref8.apply(this, arguments);
+      };
+    })());
+
+    (0, _tapeAsync2.default)('after wrap', (() => {
+      var _ref10 = (0, _bluebird.coroutine)(function* (t) {
+        seneca.wrap('role:test,cmd:hello', (() => {
+          var _ref11 = (0, _bluebird.coroutine)(function* ({ name }) {
+            const response = yield this.prior({ name });
+            return { msg: response.msg.toUpperCase() };
+          });
+
+          return function (_x10) {
+            return _ref11.apply(this, arguments);
+          };
+        })());
+
+        const response = yield seneca.act('role:test,cmd:hello,name:jeremy');
+        t.equals(response.msg, 'HELLO JEREMY');
+      });
+
+      return function (_x9) {
+        return _ref10.apply(this, arguments);
+      };
+    })());
   });
 
   return function start() {

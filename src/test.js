@@ -71,6 +71,25 @@ async function start() {
     t.equal(response.hello.msg, 'hello molly')
     t.equal(response.bye.msg, 'bye molly')
   })
+
+  test('before wrap', async function(t) {
+    seneca.wrap('role:test,cmd:hello', async function({name}) {
+      return await this.prior({name: name.toUpperCase()})
+    })
+
+    const response = await seneca.act('role:test,cmd:hello,name:jeremy')
+    t.equals(response.msg, 'hello JEREMY')
+  })
+
+  test('after wrap', async function(t) {
+    seneca.wrap('role:test,cmd:hello', async function({name}) {
+      const response = await this.prior({name})
+      return {msg: response.msg.toUpperCase()}
+    })
+
+    const response = await seneca.act('role:test,cmd:hello,name:jeremy')
+    t.equals(response.msg, 'HELLO JEREMY')
+  })
 }
 
 start()
