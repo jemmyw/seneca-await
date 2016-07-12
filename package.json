@@ -1,7 +1,7 @@
 {
   "name": "seneca-await",
   "version": "0.0.11",
-  "description": "Use await with Seneca",
+  "description": "Use async and await with Seneca",
   "main": "dist/index.js",
   "scripts": {
     "test": "npm run prepublish && node dist/test.js",
@@ -29,6 +29,7 @@
   },
   "keywords": [
     "seneca",
-    "await"
+    "await",
+    "async"
   ]
 }
