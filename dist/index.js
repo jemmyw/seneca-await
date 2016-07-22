@@ -103,7 +103,6 @@ function wrap(seneca) {
 
   if (seneca.prior) {
     wrapped.prior = function (msg, cb) {
-      console.log(msg, cb);
       if (typeof cb === 'function') {
         return seneca.prior(msg, cb);
       } else {
