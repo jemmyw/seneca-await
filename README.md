@@ -1,4 +1,4 @@
-# Seneca Async
+# Seneca Await
 
 Use async / await methods with seneca.
 
